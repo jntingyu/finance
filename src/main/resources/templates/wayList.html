@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+	<title>钱都去哪了-首页</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script>$(document).on("mobileinit",function(){$.mobile.ajaxEnabled=false;});</script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<body>
+	<div data-role="page">
+		<div data-role="header" data-position="fixed">
+			<a href="/page/recordAdd">记账</a>
+			<h1>途径</h1>
+			<a href="/logout">注销</a>
+		</div>
+		<div data-role="content">
+			<ul data-role="listview" data-filter="true" data-inset="true" id="way-list">
+			</ul>
+			<a href="#wayPopupDialog" data-rel="popup" data-position-to="window" data-transition="fade" data-role="button" id="get-popup-button">新增</a>
+			
+		    <div data-role="main" class="ui-content">
+				<div data-role="popup" id="wayPopupDialog">
+			      <div data-role="header">
+			        <h1>新增途径</h1>
+			      </div>
+			      <div data-role="main" class="ui-content">
+			        <div data-role="fieldcontain">
+						<label for="way">途径：</label>
+						<input type="text" name="name" id="way" />
+				  	  </div>
+			        <a href="javascript:void(0);" data-role="button" id="add-way-button">新增</a>
+			      </div>
+			    </div>
+				<div data-role="popup" id="wayAccountPopupDialog">
+			      <div data-role="header">
+			        <h1>关联账户</h1>
+			      </div>
+			      <div data-role="main" class="ui-content">
+			        <div data-role="fieldcontain">
+			         <input type="hidden" id="wayId" value="0">
+						<label for="accountId">账户：</label>
+						<select name="accountId" id="accountId">
+							<option value=''>请选择</option>
+						</select>
+				  	  </div>
+			        <a href="javascript:void(0);" data-role="button" id="add-way-account-button">新增</a>
+			      </div>
+			    </div>
+		    </div>
+		</div>
+		<div data-role="footer" data-position="fixed" data-id="icmu">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="/page/index">首页</a></li>
+					<li><a href="/page/consumeList" data-ajax="false">分类</a></li>
+					<li><a href="/page/wayList" class="ui-btn-active ui-state-persist">途径</a></li>
+					<li><a href="/page/accountList">账户</a></li>
+					<li><a href="/page/statistics">统计</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			getWayList();
+			
+			$("#add-way-button").click(function() {
+				if(!$.trim($("#way").val())) {
+					alert("途径不能为空！");
+					return;
+				}
+				$.ajax({
+					url: "/way/add",
+					type: "post",
+					data: {name: $("#way").val()},
+					dataType: "JSON",
+					success: function(res) {
+						if(res.code==100) {
+							alert("添加成功！");
+							var html = "<li>"+$("#way").val()+"</li>";
+							var e = $("#way-list");
+							e.append(html);
+			    			e.listview("refresh");
+			    			$("#wayPopupDialog").popup("close");
+			    			$("#way").val("");
+						} else {
+							alert(res.msg);
+						}
+					},
+					error: function() {
+						alert("error");
+					}
+				});
+			});
+			
+			$("#accountId").focus(function() {
+				if(!$.trim($("#wayId").val())) {
+					alert("途径不能为空！");
+					return;
+				}
+				$.ajax({
+					url: "/account/way/notin/"+$("#wayId").val(),
+					type: "get",
+					dataType: "json",
+					success: function(res) {
+						if(100==res.code) {
+							var e = $("#accountId");
+							var html = "<option value=''>请选择</option>";
+			    			for(var i=0;i<res.data.length;i++) {
+			    				html += "<option value='"+res.data[i].id+"'>"+res.data[i].name+"</option>";
+			    			}
+			    			e.html(html);
+			    			e.listview("refresh")
+						}
+					},
+					error: function() {
+						alert("error");
+					}
+				});
+			});
+			
+			$("#add-way-account-button").click(function() {
+				if(!$.trim($("#wayId").val())) {
+					alert("途径不能为空！");
+					return;
+				}
+				$.ajax({
+					url: "/way/account",
+					type: "post",
+					data: {wayId: $("#wayId").val(), accountId: $("#accountId").val()},
+					dataType: "JSON",
+					success: function(res) {
+						if(res.code==100) {
+							alert("添加成功！");
+							var html = "<li>"+$("#accountId").find("option:selected").text()+"</li>";
+							var e = $("#way-list");
+							e.append(html);
+			    			e.listview("refresh");
+			    			$("#wayAccountPopupDialog").popup("close");
+			    			$("#accountId").val("");
+						} else {
+							alert(res.msg);
+						}
+					},
+					error: function() {
+						alert("error");
+					}
+				});
+			});
+		});
+		
+		function getAccountByWay(wayId) {
+			$("#wayId").val(wayId);
+			$("#get-popup-button").attr("href", "#wayAccountPopupDialog");
+			$.ajax({
+				url: "/account/way/"+$("#wayId").val(),
+				type: "get",
+				dataType: "json",
+				success: function(res) {
+					if(100==res.code) {
+						var e = $("#way-list");
+		    			var html = "<li data-role='list-divider'>账户列表</li>";
+		    			for(var i=0;i<res.data.length;i++) {
+		    				html += "<li>"+res.data[i].name+"</li>";
+		    			}
+		    			e.html(html);
+		    			e.listview("refresh");
+					}
+				},
+				error: function() {
+					alert("error");
+				}
+			});
+		}
+		
+		function getWayList() {
+			$.ajax({
+		    	url: "/way/listAll",
+		    	type: "post",
+		    	dataType: "json",
+		    	success: function(res) {
+		    		if(100==res.code) {
+		    			var e = $("#way-list");
+		    			var html = "<li data-role='list-divider'>途径列表</li>";
+		    			for(var i=0;i<res.data.length;i++) {
+		    				//html += "<li>"+res.data[i].name+"</li>";
+		    				html += "<li><a href=\"javascript:void(0);\" onclick=\"getAccountByWay('"+res.data[i].id+"');\">"+res.data[i].name+"</a></li>";
+		    			}
+		    			e.html(html);
+		    			e.listview("refresh")
+		    		} else {
+		    			alert(res.msg);
+		    		}
+		    	},
+		    	error: function() {
+		    		alert("error");
+		    	}
+		    });
+		}
+	</script>
+</body>
+</html>

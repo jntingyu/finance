@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+	<title>钱都去哪了-首页</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script>$(document).on("mobileinit",function(){$.mobile.ajaxEnabled=false;});</script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script src="/static/js/DateUtil.js"></script>
+	<style type="text/css">
+		table{border-right:1px solid #F00;border-bottom:1px solid #F00}
+		table td{border-left:1px solid #F00;border-top:1px solid #F00}
+		table th{border-left:1px solid #F00;border-top:1px solid #F00}
+		tfoot td{text-align: center;}
+	</style>
+</head>
+
+<body>
+	<div data-role="page">
+		<div data-role="header" data-position="fixed">
+			<a href="/page/recordAdd">记账</a>
+			<h1>首页</h1>
+			<a href="/logout">注销</a>
+		</div>
+		<div data-role="content">
+			<h4>总数：<span id="total-all-amount"></span>元&nbsp;&nbsp;&nbsp;：<span id="avg-all-amount"></span>元</h4>
+    		<h4>本月：<span id="total-month-amount"></span>元&nbsp;&nbsp;&nbsp;：<span id="avg-month-amount"></span>元</h4>
+    		<h4>今日：<span id="today-amount"></span>元&nbsp;&nbsp;&nbsp;
+    		<hr />
+    		<h3>最新支出</h3>
+    		<!-- 
+    		<table class="ui-responsive" style="width:100%;">
+    		  <thead>
+    		    <tr>
+    		    	<th>日期</th>
+    		    	<th>分类</th>
+    		    	<th>金额</th>
+    		    	<th>总计</th>
+    		    </tr>
+    		  </thead>
+    		  <tbody>
+    		    
+    		  </tbody>
+    		  <tfoot>
+    		    <tr>
+    		    	<td colspan=10></td>
+    		    </tr>
+    		  </tfoot>
+    		</table>
+    		 -->
+    		<ul data-role="listview" data-filter="true" data-filter-placeholder="关键字" data-inset="true" id="record-list">
+			</ul>
+			<div id="load-more"></div>
+    		
+    		<div data-role="main" class="ui-content">
+				<div data-role="popup" id="myPopupDialog">
+			      <div data-role="header">
+			        <h1>详细信息</h1>
+			      </div>
+			
+			      <div data-role="main" class="ui-content">
+			        <p>日期：<span id="p-rdate"></span></p>
+			        <p>分类：<span id="p-consume"></span></p>
+			        <p>金额：<span id="p-amount"></span>
+			        <p>方式：<span id="p-method"></span>
+			        <p>附加信息：<span id="p-remark"></span></p>
+			        <a href="javascript:void(0);" data-role="button" id="cancel-button">取消</a>
+			      </div>
+			
+			    </div>
+		    </div>
+		</div>
+		<div data-role="footer" data-position="fixed" data-id="icmu">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="/page/index" class="ui-btn-active ui-state-persist">首页</a></li>
+					<li><a href="/page/consumeList">分类</a></li>
+					<li><a href="/page/wayList">途径</a></li>
+					<li><a href="/page/accountList">账户</a></li>
+					<li><a href="/page/statistics">统计</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$.ajax({
+		    	url: "/statistics/index",
+		    	type: "post",
+		    	data: {type: 0},
+		    	dataType: "json",
+		    	success: function(res) {
+		    		if(100==res.code) {
+		    			$("#total-all-amount").text(res.data.totalAllAmount);
+		    			$("#avg-all-amount").text(res.data.avgAllAmount);
+		    			$("#total-month-amount").text(res.data.totalMonthAmount);
+		    			$("#avg-month-amount").text(res.data.avgMonthAmount);
+		    			$("#today-amount").text(res.data.todayAmount);
+		    		}
+	    			getData("");
+		    	},
+		    	error: function() {
+		    		//alert("error");
+		    	}
+		    });
+			
+			$("#cancel-button").click(function() {
+				$("#myPopupDialog").popup("close");
+			});
+			
+		});
+		
+		var detail = {};
+		
+		function getDetail(id) {
+			if(detail[id]) {
+				$("#myPopupDialog").popup("open");
+				$("#p-rdate").text(dateFormat(detail[id].recordDate));
+				$("#p-consume").text(detail[id].name);
+				$("#p-amount").text(detail[id].amount);
+				$("#p-method").text(detail[id].method);
+				$("#p-remark").text(detail[id].remark);
+			} else {
+				$.ajax({
+					url: "/record/getDetail",
+					type: "POST",
+					data: {id: id},
+					dataType: "JSON",
+					success: function(res) {
+						if(res.code==100) {
+							$("#myPopupDialog").popup("open");
+							$("#p-rdate").text(dateFormat(res.data.recordDate));
+							$("#p-consume").text(res.data.name);
+							$("#p-amount").text(res.data.amount);
+							$("#p-method").text(res.data.method);
+							$("#p-remark").text(res.data.remark);
+							detail[id] = res.data;
+						} else {
+							alert(res.msg);
+						}
+					},
+					error: function() {
+						alert("error");
+					}
+				});
+			}
+		}
+		
+		function dateFormat(ds) {
+			var date = new Date(ds);
+			var now = new Date();
+			if(date.getFullYear()==now.getFullYear()) {
+				return date.Format("MM月dd日");
+			}
+			return date.Format("yyyy年MM月dd日");
+		}
+		
+		function dealWithDataForListView(res) {
+			var tempDate;
+			var totalAmount = 0;
+			var html = "";
+			var dayHtml = "";
+			for(var i=0;i<res.data.length;i++) {
+				if(i==0) {
+					tempDate = res.data[i].recordDate;
+					totalAmount += res.data[i].amount;
+					dayHtml = "<li><a href=\"javascript:void(0);\" onclick=\"getDetail('"+res.data[i].id+"');\">"+res.data[i].name+"<span class=\"ui-li-count\">"+res.data[i].amount+"</span></a></li>";
+				} else if(res.data[i].recordDate == tempDate) {
+					totalAmount += res.data[i].amount;
+					dayHtml += "<li><a href=\"javascript:void(0);\" onclick=\"getDetail('"+res.data[i].id+"');\">"+res.data[i].name+"<span class=\"ui-li-count\">"+res.data[i].amount+"</span></a></li>";
+				} else {
+					dayHtml = "<li data-role=\"list-divider\">"+dateFormat(tempDate)+"<span class=\"ui-li-count\">"+Math.round(totalAmount*100)/100+"</span></li>"+dayHtml;
+					html += dayHtml;
+
+					tempDate = res.data[i].recordDate;
+					totalAmount = res.data[i].amount;
+					dayHtml = "<li><a href=\"javascript:void(0);\" onclick=\"getDetail('"+res.data[i].id+"');\">"+res.data[i].name+"<span class=\"ui-li-count\">"+res.data[i].amount+"</span></a></li>";
+				}
+				if(i==res.data.length-1) {
+					dayHtml = "<li data-role=\"list-divider\">"+dateFormat(tempDate)+"<span class=\"ui-li-count\">"+Math.round(totalAmount*100)/100+"</span></li>"+dayHtml;
+					html += dayHtml;
+				}
+			}
+			$("#record-list").append(html);
+			$("#record-list").listview("refresh");
+			$("#load-more").html("<a href=\"javascript:void(0);\" data-role=\"button\" onclick=\"getData('"+tempDate+"');\">加载更多</a>");
+		}
+		
+		function dealWithDataForTable(res) {
+			var tbody = $("tbody").first();
+			var html = "";
+			var firstLine = "";
+			var otherLine = "";
+			var tempDate;
+			var num = 0;
+			var totalAmount = 0;
+			for(var i=0;i<res.data.length;i++) {
+				if(i==0) {
+					num++;
+					tempDate = res.data[i].recordDate;
+					firstLine = "<td><a href=\"javascript:void(0);\" onclick=\"getDetail('"+res.data[i].id+"');\">"+res.data[i].name+"</a></td><td>"+res.data[i].amount+"</td>";
+					totalAmount += res.data[i].amount;
+				} else if(tempDate==res.data[i].recordDate) {
+					num++;
+					otherLine += "<tr><td><a href=\"javascript:void(0);\" onclick=\"getDetail('"+res.data[i].id+"');\">"+res.data[i].name+"</a></td><td>"+res.data[i].amount+"</td></tr>";
+					totalAmount += res.data[i].amount;
+				} else {
+					firstLine = "<tr><td rowspan="+num+">"+dateFormat(tempDate)+"</td>" + firstLine + "<td rowspan="+num+">"+Math.round(totalAmount*100)/100+"</td></tr>";
+					html += (firstLine+otherLine);
+					
+					tempDate = res.data[i].recordDate;
+					firstLine = "<td><a href=\"javascript:void(0);\" onclick=\"getDetail('"+res.data[i].id+"');\">"+res.data[i].name+"</a></td><td>"+res.data[i].amount+"</td>";
+					otherLine = "";
+					num=1;
+					totalAmount = res.data[i].amount;
+				}
+				if(i==res.data.length-1) {
+					firstLine = "<tr><td rowspan="+num+">"+dateFormat(tempDate)+"</td>" + firstLine + "<td rowspan="+num+">"+Math.round(totalAmount*100)/100+"</td></tr>";
+					html += (firstLine+otherLine);
+				}
+				//html += "<tr><td>"+res.data[i].recordDate+"</td><td>"+res.data[i].name+"</td><td>"+res.data[i].amount+"</td></tr>";
+			}
+			tbody.append(html);
+			$("tfoot tr td").first().html("<a href=\"javascript:void(0);\" onclick=\"getData('"+tempDate+"');\">加载更多</a>");
+		}
+		
+		function getData(endDate) {
+			var data = {type: 0};
+			if(endDate) {
+				data.endDate = endDate;
+			}
+			$.ajax({
+		    	url: "/record/queryList",
+		    	type: "post",
+		    	data: data,
+		    	dataType: "json",
+		    	success: function(res) {
+		    		if(100==res.code && res.data.length>0) {
+		    			dealWithDataForListView(res);
+		    		} else {
+		    			alert(res.msg);
+		    		}
+		    	},
+		    	error: function() {
+		    		alert("error");
+		    	}
+		    });
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+	<title>钱都去哪了-登录</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script>$(document).on("mobileinit",function(){$.mobile.ajaxEnabled=false});</script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<style>
+		.ui-block-a, .ui-block-b {
+		    font-weight: bold;
+		    text-align: center;
+		    padding: 3px;
+		    color: #000;
+		}
+	</style>
+</head>
+
+<body>
+	<div data-role="page">
+		<div data-role="header">
+			<h1>钱都去哪了13156</h1>
+		</div>
+		<div data-role="content">
+			<form name="login" id="userLoginForm" action="/user/loginCheck" method="POST" data-ajax="false">
+			  <div data-role="fieldcontain">
+				<label for="userName">用户名：</label>
+				<input type="text" name="userName" id="userName" />
+			  </div>
+			  <div data-role="fieldcontain">
+				<label for="password">密码：</label>
+				<input type="password" name="password" id="password" />
+			  </div>
+				<input type="button" id="loginSubmit" value="登录" />
+			  <div data-role="main" class="ui-content">
+			  <div class="ui-grid-a">
+			      <div class="ui-block-a"><a href="/page/register">前往注册</a></div>
+			      <div class="ui-block-b"><a href="#">忘记密码</a></div>
+			  </div>
+			  </div>
+			</form>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$.mobile.ajaxEnabled = false;
+			$("#loginSubmit").click(function() {
+				if(!$("#userName").val()) {
+					alert("请输入用户名");
+					$("#userName").focus();
+					return;
+				}
+				if(!$("#password").val()) {
+					alert("请输入密码");
+					$("#password").focus();
+					return;
+				}
+				$.ajax({
+					url: "/login",
+					type: "POST",
+					data: $("#userLoginForm").serialize(),
+					dataType: "JSON",
+					success: function(res) {
+						if(200==res.code) {
+							location.href="/page/index";
+						} else {
+							alert(res.msg);
+						}
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>

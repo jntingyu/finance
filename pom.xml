@@ -1,0 +1,98 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.sadasen</groupId>
+	<artifactId>finance</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	
+	<parent>
+	  <groupId>org.springframework.boot</groupId>
+	  <artifactId>spring-boot-starter-parent</artifactId>
+	  <version>2.0.0.RELEASE</version>
+	</parent>
+	
+	<properties>
+		<hikariCP.version>2.7.4</hikariCP.version>
+		<mysql.version>6.0.6</mysql.version>
+		<beetl.version>1.1.33.RELEASE</beetl.version>
+	</properties>
+	
+	<dependencies>
+	
+		<!-- core项目的依赖 -->
+	    <dependency>
+	        <groupId>com.sadasen</groupId>
+	        <artifactId>sadasen-core</artifactId>
+	        <version>0.0.1</version>
+	    </dependency>
+	
+		<!-- util项目的依赖 -->
+	    <dependency>
+	        <groupId>com.sadasen</groupId>
+	        <artifactId>sadasen-util</artifactId>
+	        <version>0.0.1</version>
+	    </dependency>
+	
+		<!-- web项目的依赖 -->
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-web</artifactId>
+	    </dependency>
+	    
+	    <!-- 开发时使用，支持热部署
+	    <dependency>
+	    	<groupId>org.springframework.boot</groupId>
+	    	<artifactId>spring-boot-devtools</artifactId>
+	    	<optional>true</optional>
+	    </dependency>
+	     -->
+	    <!-- 集成spring data jpa -->
+	    <dependency>
+	    	<groupId>org.springframework.boot</groupId>
+	    	<artifactId>spring-boot-starter-data-jpa</artifactId>
+	    </dependency>
+	    
+	    <!-- HikariCP数据源 -->
+	    <dependency>
+	    	<groupId>com.zaxxer</groupId>
+	    	<artifactId>HikariCP</artifactId>
+	    </dependency>
+	    
+	    <!-- mysql驱动包 -->
+	    <dependency>
+	    	<groupId>mysql</groupId>
+	    	<artifactId>mysql-connector-java</artifactId>
+	    </dependency>
+	    
+	    <!-- ibeet-sql集成 -->
+	    <dependency>
+	    	<groupId>com.ibeetl</groupId>
+	    	<artifactId>beetl-framework-starter</artifactId>
+	    	<version>${beetl.version}</version>
+	    </dependency>
+	    
+	    <!-- 模板引擎 -->
+	    <dependency>
+	    	<groupId>org.springframework.boot</groupId>
+	    	<artifactId>spring-boot-starter-thymeleaf</artifactId>
+	    </dependency>
+	    
+	</dependencies>
+	
+	<build>
+		<!-- 产生构件的文件名 -->
+		<finalName>finance</finalName>
+		
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

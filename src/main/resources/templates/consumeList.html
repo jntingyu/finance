@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+	<title>钱都去哪了-首页</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script>$(document).on("mobileinit",function(){$.mobile.ajaxEnabled=false;});</script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<style type="text/css">
+		#out-type {
+			background : #CCC;
+		}
+		#in-type {
+			background: #EEE;
+		}
+	</style>
+</head>
+
+<body>
+	<div data-role="page">
+		<div data-role="header" data-position="fixed">
+			<a href="/page/recordAdd">记账</a>
+			<h1>分类</h1>
+			<a href="/logout">注销</a>
+		</div>
+		<div data-role="content">
+		<!-- 
+			<div data-role="main" class="ui-content" id="consume-list">
+    			<div data-role="collapsible" data-mini="true">
+      				<h1>点击我 - 我可以折叠0！</h1>
+      				<div data-role="collapsible" data-mini="true">
+        				<h3>点击我 - 我是嵌套的可折叠块！</h3>
+        			</div>
+        			<div data-role="collapsible" data-mini="true">
+        				<h3>点击我 - 我是嵌套的可折叠块！</h3>
+      				</div>
+      			</div>
+      			<div data-role="collapsible" data-mini="true">
+      				<h1>点击我 - 我可以折叠1！</h1>
+      				<div data-role="collapsible" data-mini="true">
+        				<h1>点击我 - 我是嵌套的可折叠块！</h1>
+        			</div>
+        			<div data-role="collapsible" data-mini="true">
+        				<h1>点击我 - 我是嵌套的可折叠块！</h1>
+        			</div>
+        		</div>
+        		<div data-role="collapsible" data-mini="true">
+      				<h1>点击我 - 我可以折叠2！</h1>
+      				<div data-role="collapsible" data-mini="true">
+        				<h1>点击我 - 我是嵌套的可折叠块！</h1>
+        			</div>
+        			<div data-role="collapsible" data-mini="true">
+        				<h1>点击我 - 我是嵌套的可折叠块！</h1>
+        			</div>
+    			</div>
+  			</div>
+		 -->
+		 	<input type="hidden" id="parentId" value="0">
+		 	<input type="hidden" id="pname" value="分类">
+		 	<input type="hidden" id="type" value="0">
+		 	<div data-role="controlgroup" data-type="horizontal">
+				<a href="javascript:void(0);" id="out-type" data-role="button">支出</a>
+				<a href="javascript:void(0);" id="in-type" data-role="button">收入</a>
+			</div>
+			<ul data-role="listview" data-filter="true" data-inset="true" id="level-0">
+			</ul>
+			<a href="#myPopupDialog" data-rel="popup" data-position-to="window" data-transition="fade" data-role="button">新增</a>
+			
+		    <div data-role="main" class="ui-content">
+				<div data-role="popup" id="myPopupDialog">
+			      <div data-role="header">
+			        <h1>新增分类</h1>
+			      </div>
+			
+			      <div data-role="main" class="ui-content">
+					<label id="pname-lable"></label>
+			        <div data-role="fieldcontain">
+						<label for="name">分类：</label>
+						<input type="text" name="name" id="name" />
+				  	</div>
+			        <a href="javascript:void(0);" data-role="button" id="add-button">新增</a>
+			      </div>
+			
+			    </div>
+		    </div>
+		</div>
+		<div data-role="footer" data-position="fixed" data-id="icmu">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="/page/index">首页</a></li>
+					<li><a href="/page/consumeList" class="ui-btn-active ui-state-persist">分类</a></li>
+					<li><a href="/page/wayList">途径</a></li>
+					<li><a href="/page/accountList">账户</a></li>
+					<li><a href="/page/statistics">统计</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			listByParentId(0, "分类列表");
+			
+			$("#in-type").click(function() {
+				$("#in-type").css("background", "#CCC");
+				$("#out-type").css("background", "#EEE")
+				$("#type").val(1);
+				listByParentId($("#parentId").val(), $("#pname").val());
+			});
+			
+			$("#out-type").click(function() {
+				$("#in-type").css("background", "#EEE");
+				$("#out-type").css("background", "#CCC")
+				$("#type").val(0);
+				listByParentId($("#parentId").val(), $("#pname").val());
+			});
+			
+			$("#add-button").click(function() {
+				if(!$.trim($("#name").val())) {
+					alert("分类名称不能为空！");
+					return;
+				}
+				$.ajax({
+					url: "/consume/add",
+					type: "post",
+					data: {parentId: $("#parentId").val(), name: $("#name").val(), type: $("#type").val()},
+					dataType: "JSON",
+					success: function(res) {
+						if(res.code==100) {
+							alert("添加成功！");
+							var html = "<li><a href=\"javascript:void(0);\" onclick=\"listByParentId('"+res.data.id+"','"+res.data.name+"');\">"+res.data.name+"</a></li>";
+							var e = $("#level-0");
+							e.append(html);
+			    			e.listview("refresh");
+			    			$("#myPopupDialog").popup("close");
+			    			$("#name").val("");
+						} else {
+							alert(res.msg);
+						}
+					},
+					error: function() {
+						alert("error");
+					}
+				});
+			});
+		});
+		
+		function listByParentId(parentId, pname) {
+			$.ajax({
+		    	url: "/consume/listByParent/"+$("#type").val()+"/"+parentId,
+		    	type: "get",
+		    	dataType: "json",
+		    	success: function(res) {
+		    		if(100==res.code) {
+		    			var e = $("#level-0");
+		    			var html = "<li data-role='list-divider'>"+pname+"</li>";
+		    			for(var i=0;i<res.data.length;i++) {
+		    				html += "<li><a href=\"javascript:void(0);\" onclick=\"listByParentId('"+res.data[i].id+"','"+res.data[i].name+"');\">"+res.data[i].name+"</a></li>";
+		    			}
+		    			e.html(html);
+		    			e.listview("refresh")
+		    			$("#parentId").val(parentId);
+		    			$("#pname").val(pname);
+		    			if(parentId) {
+				    		$("#pname-lable").text(pname);
+		    			}
+		    		} else {
+		    			alert(res.msg);
+		    		}
+		    	},
+		    	error: function() {
+		    		alert("error");
+		    	}
+		    });
+		}
+	</script>
+</body>
+</html>

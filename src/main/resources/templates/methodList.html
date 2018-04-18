@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+	<title>钱都去哪了-首页</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script>$(document).on("mobileinit",function(){$.mobile.ajaxEnabled=false;});</script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<body>
+	<div data-role="page">
+		<div data-role="header" data-position="fixed">
+			<a href="/page/recordAdd">记账</a>
+			<h1>支出方式</h1>
+			<a href="/logout">注销</a>
+		</div>
+		<div data-role="content">
+			<ul data-role="listview" data-filter="true" data-inset="true" id="method-list">
+			</ul>
+			<a href="#myPopupDialog" data-rel="popup" data-position-to="window" data-transition="fade" data-role="button">新增</a>
+			
+		    <div data-role="main" class="ui-content">
+				<div data-role="popup" id="myPopupDialog">
+			      <div data-role="header">
+			        <h1>新增支出方式</h1>
+			      </div>
+			
+			      <div data-role="main" class="ui-content">
+			        <div data-role="fieldcontain">
+						<label for="method">支出方式：</label>
+						<input type="text" name="name" id="method" />
+				  	</div>
+			        <a href="javascript:void(0);" data-role="button" id="add-button">新增</a>
+			      </div>
+			
+			    </div>
+		    </div>
+		</div>
+		<div data-role="footer" data-position="fixed" data-id="icmu">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="/page/index">首页</a></li>
+					<li><a href="/page/consumeList" data-ajax="false">分类</a></li>
+					<li><a href="/page/methodList" class="ui-btn-active ui-state-persist">支出方式</a></li>
+					<li><a href="/index">统计</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			//getMethodList();
+			
+			$("#add-button").click(function() {
+				if(!$.trim($("#method").val())) {
+					alert("支出方式不能为空！");
+					return;
+				}
+				$.ajax({
+					url: "/method/addCheck",
+					type: "post",
+					data: {method: $("#method").val()},
+					dataType: "JSON",
+					success: function(res) {
+						if(res.code==200) {
+							alert("添加成功！");
+							var html = "<li>"+$("#method").val()+"</li>";
+							var e = $("#method-list");
+							e.append(html);
+			    			e.listview("refresh");
+			    			$("#myPopupDialog").popup("close");
+			    			$("#method").val("");
+						} else {
+							alert(res.msg);
+						}
+					},
+					error: function() {
+						alert("error");
+					}
+				});
+			});
+		});
+		
+		function getMethodList() {
+			$.ajax({
+		    	url: "/method/listAll",
+		    	type: "post",
+		    	dataType: "json",
+		    	success: function(res) {
+		    		if(200==res.code) {
+		    			var e = $("#method-list");
+		    			var html = "<li data-role='list-divider'>支出方式列表</li>";
+		    			for(var i=0;i<res.data.length;i++) {
+		    				html += "<li>"+res.data[i].method+"</li>";
+		    			}
+		    			e.html(html);
+		    			e.listview("refresh")
+		    		} else {
+		    			alert(res.msg);
+		    		}
+		    	},
+		    	error: function() {
+		    		alert("error");
+		    	}
+		    });
+		}
+	</script>
+</body>
+</html>

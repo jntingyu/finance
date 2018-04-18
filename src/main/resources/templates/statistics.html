@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+	<title>钱都去哪了-统计</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script>$(document).on("mobileinit",function(){$.mobile.ajaxEnabled=false;});</script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<body>
+	<div data-role="page">
+		<div data-role="header" data-position="fixed">
+			<a href="/page/recordAdd">记账</a>
+			<h1>账户</h1>
+			<a href="/logout">注销</a>
+		</div>
+		<div data-role="content">
+			<div data-role="collapsible">
+				<h1 id="every-month">每月统计</h1>
+				<input type="hidden" id="every-month-flag" value="0"/>
+				<ul data-role="listview" data-inset="true" id="every-month-record-list">
+				</ul>
+			</div>
+			<div data-role="collapsible">
+				<h1 id="every-base-consume">主分类统计</h1>
+				<input type="hidden" id="every-base-consume-flag" value="0"/>
+				<ul data-role="listview" data-inset="true" id="every-base-consume-record-list">
+				</ul>
+			</div>
+			<div data-role="collapsible">
+				<h1 id="every-consume">分类排序</h1>
+				<input type="hidden" id="every-consume-flag" value="0"/>
+				<ul data-role="listview" data-inset="true" id="every-consume-record-list">
+				</ul>
+			</div>
+		</div>
+		<div data-role="footer" data-position="fixed" data-id="icmu">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="/page/index">首页</a></li>
+					<li><a href="/page/consumeList">分类</a></li>
+					<li><a href="/page/wayList">途径</a></li>
+					<li><a href="/page/accountList">账户</a></li>
+					<li><a href="/page/statistics" class="ui-btn-active ui-state-persist">统计</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$("#every-month").click(function() {
+				if($("#every-month-flag").val()==0) {
+					$.ajax({
+						url: "/statistics/everyMonth/"+0,
+						type: "GET",
+						dataType: "JSON",
+						success: function(res) {
+							if(100==res.code) {
+								var html = "";
+								if(res.data && res.data.length>0) {
+									for(var i=0;i<res.data.length;i++) {
+										html += "<li>"+(i+1)+". "+res.data[i].fieldOne+"<span class=\"ui-li-count\">"+res.data[i].fieldTwo+"</span></li>";
+									}
+									$("#every-month-record-list").html(html);
+									$("#every-month-record-list").listview("refresh");
+									$("#every-month-flag").val(1);
+								}
+							}
+						}
+					});
+				}
+			});
+			
+			$("#every-base-consume").click(function() {
+				if($("#every-base-consume-flag").val()==0) {
+					$.ajax({
+						url: "/statistics/everyBaseConsume/"+0,
+						type: "GET",
+						dataType: "JSON",
+						success: function(res) {
+							if(100==res.code) {
+								var html = "";
+								if(res.data && res.data.length>0) {
+									for(var i=0;i<res.data.length;i++) {
+										html += "<li>"+(i+1)+". "+res.data[i].fieldOne+"<span class=\"ui-li-count\">"+res.data[i].fieldTwo+"</span></li>";
+									}
+									$("#every-base-consume-record-list").html(html);
+									$("#every-base-consume-record-list").listview("refresh");
+									$("#every-base-consume-flag").val(1);
+								}
+							}
+						}
+					});
+				}
+			});
+			
+			$("#every-consume").click(function() {
+				if($("#every-consume-flag").val()==0) {
+					$.ajax({
+						url: "/statistics/everyConsume/"+0,
+						type: "GET",
+						dataType: "JSON",
+						success: function(res) {
+							if(100==res.code) {
+								var html = "";
+								if(res.data && res.data.length>0) {
+									for(var i=0;i<res.data.length;i++) {
+										html += "<li>"+(i+1)+". "+res.data[i].fieldOne+"<span class=\"ui-li-count\">"+res.data[i].fieldTwo+"</span></li>";
+									}
+									$("#every-consume-record-list").html(html);
+									$("#every-consume-record-list").listview("refresh");
+									$("#every-consume-flag").val(1);
+								}
+							}
+						}
+					});
+				}
+			});
+		});
+	</script>
+</body>
+</html>
