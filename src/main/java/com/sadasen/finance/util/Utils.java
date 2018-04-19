@@ -1,6 +1,7 @@
 package com.sadasen.finance.util;
 
 import java.io.Serializable;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +21,8 @@ import com.sadasen.finance.modules.user.entity.User;
 public class Utils implements Serializable {
 	
 	private static final long serialVersionUID = 3998903802827987642L;
-	
+
+	private static final String salt = "sds_13";
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	public static final Map<String, String> deMap = new HashMap<>();
 	
@@ -75,6 +77,29 @@ public class Utils implements Serializable {
 		return null;
 	}
 	
+	public static String MD5(String s) {
+	    try {
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        s += salt;
+	        byte[] bytes = md.digest(s.getBytes("utf-8"));
+	        return toHex(bytes);
+	    }
+	    catch (Exception e) {
+	        throw new RuntimeException(e);
+	    }
+	}
+	
+	private static String toHex(byte[] bytes) {
+
+	    final char[] hexChars = "0123456789ABCDEF".toCharArray();
+	    StringBuilder ret = new StringBuilder(bytes.length * 2);
+	    for (int i=0; i<bytes.length; i++) {
+	        ret.append(hexChars[(bytes[i] >> 4) & 0x0f]);
+	        ret.append(hexChars[bytes[i] & 0x0f]);
+	    }
+	    return ret.toString();
+	}
+	
 	public static void printInfo(String string) {
 		System.out.println("LOG INFO : " + string);
 	}
@@ -89,9 +114,10 @@ public class Utils implements Serializable {
 	
 	
 	public static void main(String[] args) {
-		String s = "abcdefg";
+		String s = "123456";
 		String end3 = s.substring(s.length()-3);
 		System.out.println(end3);
+		System.out.println(MD5(s));
 	}
 
 }
