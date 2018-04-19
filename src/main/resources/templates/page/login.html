@@ -23,7 +23,7 @@
 			<h1>钱都去哪了13156</h1>
 		</div>
 		<div data-role="content">
-			<form name="login" id="userLoginForm" action="/user/loginCheck" method="POST" data-ajax="false">
+			<form name="login" id="userLoginForm" method="POST" data-ajax="false">
 			  <div data-role="fieldcontain">
 				<label for="userName">用户名：</label>
 				<input type="text" name="userName" id="userName" />
@@ -57,17 +57,15 @@
 					return;
 				}
 				$.ajax({
-					url: "/login",
+					url: "/check/login",
 					type: "POST",
 					data: $("#userLoginForm").serialize(),
 					dataType: "JSON",
 					success: function(res) {
 						if(100==res.code) {
 							location.href="/page/index";
-						} else if(640==res.code) {
-							alert("用户名或密码错误！");
 						} else {
-							alert("系统错误！");
+							alert(res.msg);
 						}
 					}
 				});

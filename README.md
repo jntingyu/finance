@@ -1,5 +1,7 @@
 # finance
 
+# 集成框架
+
 # 整体页面和接口说明
 /page/{pageName}	跳转到无登录验证的页面
 /check/**			处理无登录验证的接口
@@ -21,7 +23,8 @@
 
 ## 忘记密码
 页面：GET /page/forgetPwd
-接口：POST /check/forgetPwd
+请求邮件接口：GET /check/forgetPwd/{userName}
+修改接口：PUT /check/forgetPwd/{userName}
 
 ## 修改密码
 页面：GET /view/user/changePwd

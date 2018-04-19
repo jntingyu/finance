@@ -1,13 +1,19 @@
 用户表操作
 
-findToLogin
+selectToLogin
 ===
-	select id, user_name, nick_name, reg_time from sys_user
+	select id, user_name, nick_name, email, profile_pic, reg_time 
+	from sys_user
 	where 
 	user_name = #userName# and password = #password#
 	
 selectByUserName
 ===
-	select id, user_name, nick_name, reg_time from sys_user
+	select id, user_name, nick_name, email, profile_pic, reg_time 
+	from sys_user
 	where
 	user_name = #userName#
+	
+updatePasswordByUserName
+===
+	update sys_user set password = #password# where user_name = #userName#

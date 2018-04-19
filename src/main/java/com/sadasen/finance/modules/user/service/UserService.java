@@ -18,5 +18,9 @@ public interface UserService {
 	public User findById(long id);
 	
 	public User getById(long id);
+	
+	public User findByUserName(String userName);
+	
+	public int modifyPwdByUserName(UserDto userDto);
 
 }

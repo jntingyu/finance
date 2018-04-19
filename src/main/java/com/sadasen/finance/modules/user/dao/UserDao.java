@@ -14,8 +14,25 @@ import com.sadasen.finance.modules.user.entity.User;
  */
 public interface UserDao extends BaseMapper<User> {
 	
-	public User findToLogin(UserDto userDto);
+	/**
+	 * 登录查询（用户名和密码）
+	 * @param userDto
+	 * @return
+	 */
+	public User selectToLogin(UserDto userDto);
 	
+	/**
+	 * 根据用户名查询用户信息
+	 * @param userName
+	 * @return
+	 */
 	public User selectByUserName(@Param("userName") String userName);
+	
+	/**
+	 * 根据用户名修改密码
+	 * @param userDto
+	 * @return
+	 */
+	public int updatePasswordByUserName(UserDto userDto);
 
 }

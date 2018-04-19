@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sadasen.finance.base.BaseController;
-import com.sadasen.finance.modules.user.entity.User;
 
 /**
  * @date 2018年3月8日
@@ -22,11 +21,6 @@ public class PageController extends BaseController {
 
 	@GetMapping("/{pageName}")
 	public String page(@PathVariable("pageName") String pageName) {
-		User user = (User) getRequest().getSession().getAttribute("user");
-		System.out.println(user);
-		if(null!=user) {
-			System.out.println(user.getUserName());
-		}
 		System.out.println("pageName : "+"page/"+pageName);
 		return "page/"+pageName;
 	}

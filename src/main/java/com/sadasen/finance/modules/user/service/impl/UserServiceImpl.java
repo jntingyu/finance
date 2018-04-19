@@ -9,7 +9,6 @@ import com.sadasen.finance.modules.user.dto.UserDto;
 import com.sadasen.finance.modules.user.entity.User;
 import com.sadasen.finance.modules.user.service.UserService;
 import com.sadasen.util.DateTimeUtil;
-import com.sadasen.util.StringUtil;
 
 /**
  * @date 2018年3月8日
@@ -27,14 +26,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User save(User user) {
-		if(StringUtil.isEmpty(user.getUserName())) {
-			user.setId(-1L);
-			return user;
-		}
-		if(null!=findByUserName(user.getUserName())) {
-			user.setId(-2L);
-			return user;
-		}
 		user.setNickName(user.getUserName());
 		user.setRegTime(DateTimeUtil.getNow());
 		int r = sqlManager.insertTemplate(user, true);
@@ -46,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User findToLogin(UserDto userDto) {
-		return userDao.findToLogin(userDto);
+		return userDao.selectToLogin(userDto);
 	}
 	
 	@Override
@@ -58,9 +49,15 @@ public class UserServiceImpl implements UserService {
 	public User getById(long id) {
 		return userDao.single(id);
 	}
-	
+
+	@Override
 	public User findByUserName(String userName) {
 		return userDao.selectByUserName(userName);
+	}
+
+	@Override
+	public int modifyPwdByUserName(UserDto userDto) {
+		return userDao.updatePasswordByUserName(userDto);
 	}
 
 }
