@@ -34,5 +34,13 @@ public interface UserDao extends BaseMapper<User> {
 	 * @return
 	 */
 	public int updatePasswordByUserName(UserDto userDto);
+	
+	/**
+	 * 修改密码
+	 * @param userId
+	 * @param password
+	 * @return
+	 */
+	public int updatePassword(@Param("userId") long userId, @Param("password") String password);
 
 }

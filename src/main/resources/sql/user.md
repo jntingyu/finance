@@ -17,3 +17,8 @@ selectByUserName
 updatePasswordByUserName
 ===
 	update sys_user set password = #password# where user_name = #userName#
+	
+updatePassword
+===
+	update sys_user set password = #password# where id = #userId#
+	

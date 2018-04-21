@@ -167,7 +167,7 @@ public class CheckController extends BaseController {
 		
 		UserDto userDto = new UserDto();
 		userDto.setUserName(userName);
-		userDto.setPassword(password);
+		userDto.setPassword(Utils.MD5(password));
 		try {
 			int r = userService.modifyPwdByUserName(userDto);
 			System.out.println(r);

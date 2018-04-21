@@ -18,6 +18,8 @@ public class Consts {
 		
 		public static final Map<String, String> CHANGE_PWD_CACHE = new HashMap<>();
 		
+		public static final Map<String, String> BINDING_EMAIL_CACHE = new HashMap<>();
+		
 	}
 	
 	/**
@@ -29,6 +31,8 @@ public class Consts {
 		public static final String USER_NAME = "[0-9A-Za-z]{2,20}";
 		// 密码的正则表达式（不包含中文的6-15位字符）
 		public static final String PASSWORD = "^[^\\u4e00-\\u9fa5]{6,15}";
+		// email的正则表达式
+		public static final String EMAIL = "^(\\w)+(\\.\\w+)*@(\\w)+((\\.\\w+)+)$";
 		
 	}
 

@@ -59,5 +59,10 @@ public class UserServiceImpl implements UserService {
 	public int modifyPwdByUserName(UserDto userDto) {
 		return userDao.updatePasswordByUserName(userDto);
 	}
+	
+	@Override
+	public int modifyPwdById(long userId, String password) {
+		return userDao.updatePassword(userId, password);
+	}
 
 }

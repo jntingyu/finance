@@ -24,6 +24,10 @@ public class JMailUtil {
     	sendForUpdatePwd("1769478647@qq.com", "leiys13", UUID.randomUUID().toString());
     }
     
+    public static void send(String email, String uuid, String title, String content) {
+    	
+    }
+    
     public static void sendForUpdatePwd(String email, String userName, String uuid) throws MessagingException {
         // 配置发送邮件的环境属性
         final Properties props = new Properties();

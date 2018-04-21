@@ -22,5 +22,7 @@ public interface UserService {
 	public User findByUserName(String userName);
 	
 	public int modifyPwdByUserName(UserDto userDto);
+	
+	public int modifyPwdById(long userId, String password);
 
 }

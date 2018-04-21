@@ -32,6 +32,7 @@
 
 ## 绑定邮箱
 页面：GET /view/user/bindingEmail
+请求邮件接口：GET /user/bindingEmail
 接口：PUT /user/bindingEmail
 
 ## 注销
