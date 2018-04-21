@@ -22,3 +22,7 @@ updatePassword
 ===
 	update sys_user set password = #password# where id = #userId#
 	
+updateEmailByUserName
+===
+	update sys_user set email = #email# where user_name = #userName#
+	

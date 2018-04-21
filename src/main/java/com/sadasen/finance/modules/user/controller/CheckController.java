@@ -102,7 +102,7 @@ public class CheckController extends BaseController {
 		String uuidDateTime = Consts.Cache.CHANGE_PWD_CACHE.get(userName);
 		if(StringUtil.isNotEmpty(uuidDateTime)) {
 			try {
-				String dateTime = uuidDateTime.split(":")[1];
+				String dateTime = uuidDateTime.split("::")[1];
 				long time = DateUtil.stringToDateFormat(dateTime, "yyyyMMddHHmmss").getTime();
 				long now = new Date().getTime();
 				// 如果上次的请求不到一分钟，则提示用户请求频繁
@@ -112,6 +112,7 @@ public class CheckController extends BaseController {
 			} catch (ParseException e) {
 				e.printStackTrace();
 				System.out.println("缓存数据处理出错");
+				return JsonResult.instance(Status.SYSTEM_ERROR);
 			}
 		}
 		
@@ -125,7 +126,7 @@ public class CheckController extends BaseController {
 		
 		String uuid = UUID.randomUUID().toString();	
 		String dateTime = DateUtil.dateToStringFormat(new Date(), "yyyyMMddHHmmss");
-		Consts.Cache.CHANGE_PWD_CACHE.put(userName, uuid+":"+dateTime);
+		Consts.Cache.CHANGE_PWD_CACHE.put(userName, uuid+"::"+dateTime);
 		
 		new Thread() {
 			
@@ -154,11 +155,11 @@ public class CheckController extends BaseController {
 			@RequestParam("password") String password, @RequestParam("validId") String validId) {
 		String uuidDateTime = Consts.Cache.CHANGE_PWD_CACHE.get(userName);
 		if(StringUtil.isEmpty(uuidDateTime)) {
-			return JsonResult.instance(Status.REQUEST_VALID, "更改密码的链接已失效，请重新申请忘记密码的链接");
+			return JsonResult.instance(Status.REQUEST_VALID, "该链接已失效");
 		}
-		String uuid = uuidDateTime.split(":")[0];
+		String uuid = uuidDateTime.split("::")[0];
 		if(!uuid.equals(validId)) {
-			return JsonResult.instance(Status.REQUEST_VALID, "链接错误，请重新申请忘记密码的链接");
+			return JsonResult.instance(Status.REQUEST_VALID, "错误链接");
 		}
 		// 验证用户名密码是否符合规则
 		if(null==password || !RegexUtil.match(Consts.Regex.PASSWORD, password)) {
@@ -176,6 +177,38 @@ public class CheckController extends BaseController {
 			return JsonResult.instance(Status.SYSTEM_ERROR);
 		}
 		return JsonResult.instance("修改成功");
+	}
+	
+	@GetMapping("/bindingEmail/{userName}/{validId}")
+	public JsonResult bindingEmail(@PathVariable("userName") String userName, @PathVariable("validId") String validId) {
+		String uuidDateTime = Consts.Cache.BINDING_EMAIL_CACHE.get(userName);
+		if(StringUtil.isEmpty(uuidDateTime)) {
+			return JsonResult.instance(Status.REQUEST_FAILURE, "该链接已失效");
+		}
+		
+		String[] bindInfo = uuidDateTime.split("::");
+		try {
+			// 验证uuid值是否一致
+			String uuid = bindInfo[0];
+			if(!uuid.equals(validId)) {
+				return JsonResult.instance(Status.REQUEST_VALID, "错误链接");
+			}
+			// 验证时间是否超过一个小时
+			long requestTime = DateUtil.stringToDateFormat(bindInfo[1], "yyyyMMddHHmmss").getTime();
+			long now = new Date().getTime();
+			if(now - requestTime > 60*60*1000) {
+				Consts.Cache.BINDING_EMAIL_CACHE.remove(userName);
+				return JsonResult.instance(Status.REQUEST_VALID, "该链接已失效");
+			}
+			// 绑定邮箱
+			String email = bindInfo[2];
+			int r = userService.modifyEmailByUserName(userName, email);
+			System.out.println(r);
+			return JsonResult.instance();
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return JsonResult.instance(Status.SYSTEM_ERROR);
+		}
 	}
 
 }

@@ -24,12 +24,8 @@ public class JMailUtil {
     	sendForUpdatePwd("1769478647@qq.com", "leiys13", UUID.randomUUID().toString());
     }
     
-    public static void send(String email, String uuid, String title, String content) {
-    	
-    }
-    
-    public static void sendForUpdatePwd(String email, String userName, String uuid) throws MessagingException {
-        // 配置发送邮件的环境属性
+    public static void send(String email, String title, String content) throws MessagingException {
+    	 // 配置发送邮件的环境属性
         final Properties props = new Properties();
         /*
          * 可用的属性： mail.store.protocol / mail.transport.protocol / mail.host /
@@ -65,22 +61,27 @@ public class JMailUtil {
         // 设置收件人
         InternetAddress to = new InternetAddress(email);
         message.setRecipient(RecipientType.TO, to);
-
-        // 设置抄送
-//        InternetAddress cc = new InternetAddress("luo_aaaaa@yeah.net");
-//        message.setRecipient(RecipientType.CC, cc);
-
-        // 设置密送，其他的收件人不能看到密送的邮件地址
-//        InternetAddress bcc = new InternetAddress("aaaaa@163.com");
-//        message.setRecipient(RecipientType.CC, bcc);
-
+        
         // 设置邮件标题
-        message.setSubject("萨达森记账系统修改密码验证");
+        message.setSubject(title);
 
         // 设置邮件的内容体
-        message.setContent("<a href='http://www.sadasen.com:9199/page/validChangePwd?userName=" + userName + "&validId=" + uuid + "'>请点击此处，打开修改密码页面</a>", "text/html;charset=UTF-8");
+        message.setContent(content, "text/html;charset=UTF-8");
 
         // 发送邮件
         Transport.send(message);
     }
+    
+    public static void sendForUpdatePwd(String email, String userName, String uuid) throws MessagingException {
+    	String title = "萨达森记账系统修改密码验证";
+    	String content = "<a href='http://www.sadasen.com:9199/page/validChangePwd?userName=" + userName + "&validId=" + uuid + "'>请点击此处，打开修改密码页面</a><span style='color:red'>一个小时内有效</span>";
+        send(email, title, content);
+    }
+    
+    public static void sendForBindingEmail(String email, String userName, String uuid) throws MessagingException {
+    	String title = "萨达森记账系统绑定邮箱验证";
+    	String content = "<a href='http://www.sadasen.com:9199/check/bindingEmail?userName=" + userName + "&validId=" + uuid + "'>请点击此处，绑定邮箱</a><span style='color:red'>一个小时内有效</span>";
+    	send(email, title, content);
+    }
+    
 }

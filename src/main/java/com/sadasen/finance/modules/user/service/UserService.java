@@ -24,5 +24,7 @@ public interface UserService {
 	public int modifyPwdByUserName(UserDto userDto);
 	
 	public int modifyPwdById(long userId, String password);
+	
+	public int modifyEmailByUserName(String userName, String email);
 
 }

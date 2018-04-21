@@ -42,5 +42,13 @@ public interface UserDao extends BaseMapper<User> {
 	 * @return
 	 */
 	public int updatePassword(@Param("userId") long userId, @Param("password") String password);
+	
+	/**
+	 * 根据用户名修改邮箱
+	 * @param userId
+	 * @param email
+	 * @return
+	 */
+	public int updateEmailByUserName(@Param("userName") String userName, @Param("email") String email);
 
 }
