@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+	<title>钱都去哪了-登录</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script>$(document).on("mobileinit",function(){$.mobile.ajaxEnabled=false});</script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script src="/static/js/laydate/laydate.js"></script>
+	<script src="/static/js/DateUtil.js"></script>
+	<style>
+		.ui-block-a, .ui-block-b {
+		    font-weight: bold;
+		    text-align: center;
+		    padding: 3px;
+		    color: #000;
+		}
+	</style>
+</head>
+
+<body>
+	<div data-role="page">
+		<div data-role="header">
+			<h1>记账</h1>
+		</div>
+		<div data-role="content">
+			<form name="login" id="recordAddForm" action="/record/add" method="POST" data-ajax="false">
+			  <input type="hidden" id="type" value="0">
+			  <div data-role="controlgroup" data-type="horizontal">
+				  <a href="javascript:void(0);" id="out-type" data-role="button">支出</a>
+				  <a href="javascript:void(0);" id="in-type" data-role="button">收入</a>
+			  </div>
+			  <div data-role="fieldcontain">
+				<label for="userName">日期：</label>
+				<input type="text" name="recordDate" id="recordDate" />
+			  </div>
+			  <div data-role="fieldcontain">
+			  	<fieldset data-role="controlgroup">
+			  		<legend>分类：</legend>
+			  		<div id="level0-div">
+			  			<select name="consumeId" id="level0" onchange="listByParent(this, 0);"></select>
+			  		</div>
+			  		<div id="level1-div">
+			  		</div>
+			  		<div id="level2-div">
+			  		</div>
+			  		<div id="level3-div">
+			  		</div>
+			  		<div id="level4-div">
+			  		</div>
+			  		<div id="level5-div">
+			  		</div>
+			  		<div id="level6-div">
+			  		</div>
+			  		<div id="level7-div">
+			  		</div>
+			  		<div id="level8-div">
+			  		</div>
+			  		<div id="level9-div">
+			  		</div>
+			  	</fieldset>
+			  </div>
+			  <div data-role="fieldcontain">
+				<label for="damount">金额：</label>
+				<input type="number" name="damount" id="damount" />
+			  </div>
+			  <fieldset data-role="fieldcontain">
+		        <label for="wayId">方式</label>
+		        <select name="wayId" id="wayId" onchange="getAccountList(this)">
+		        </select>
+		      </fieldset>
+			  <fieldset data-role="fieldcontain">
+		        <label for="accountId">账户</label>
+		        <select name="accountId" id="accountId">
+		        </select>
+		      </fieldset>
+		      <div class="ui-field-contain">
+		        <label for="remark">附加信息:</label>
+		        <textarea name="remark" id="remark"></textarea>
+		      </div>
+				<input type="button" id="addRecordSubmit" value="添加记账" />
+			</form>
+		</div>
+		<div data-role="footer" data-position="fixed" data-id="icmu">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="/page/index">首页</a></li>
+					<li><a href="/page/consumeList" data-ajax="false">分类</a></li>
+					<li><a href="/page/wayList">途径</a></li>
+					<li><a href="/page/accountList">账户</a></li>
+					<li><a href="/index">统计</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			
+			$("#recordDate").val(new Date().Format("yyyy-MM-dd"));
+			
+			laydate.render({
+  		  		elem: '#recordDate' //指定元素
+			});
+			
+			$.ajax({
+				url: "/consume/listByParent/"+$("#type").val()+"/"+0,
+				method: "get",
+				dataType: "json",
+				success: function(res) {
+					if(100==res.code) {
+						if(0!=res.data.length) {
+							var txt = "<option value=''>请选择</option>"
+							for(var i=0;i<res.data.length;i++) {
+								txt += "<option value='"+res.data[i].id+"'>"+res.data[i].name+"</option>";
+							}
+							$("#level0").html(txt);
+						}
+					} else {
+						alert(res.msg);
+					}
+				},
+				error: function() {
+					alert("error");
+				}
+			});
+			
+			$.ajax({
+				url: "/way/listAll",
+				method: "post",
+				dataType: "json",
+				success: function(res) {
+					if(100==res.code) {
+						if(0!=res.data.length) {
+							var txt = "<option value=''>请选择</option>"
+							for(var i=0;i<res.data.length;i++) {
+								txt += "<option value='"+res.data[i].id+"'>"+res.data[i].name+"</option>";
+							}
+							$("#wayId").html(txt);
+						}
+					} else {
+						alert(res.msg);
+					}
+				},
+				error: function() {
+					alert("error");
+				}
+			});
+
+			$("#addRecordSubmit").click(function() {
+				if(!$("#recordDate").val()) {
+					alert("请选择日期");
+					return;
+				}
+				if(!$("select[name='consumeId']").val()) {
+					alert("请选择分类");
+					return;
+				}
+				if(!$("#damount").val()) {
+					alert("请填写金额");
+					return;
+				}
+				if(!$("select[name='wayId']").val()) {
+					alert("请选择支出方式");
+					return;
+				}
+				$.ajax({
+					url: "/record/add",
+					type: "POST",
+					data: $("#recordAddForm").serialize(),
+					dataType: "JSON",
+					success: function(res) {
+						if(100==res.code) {
+							alert("添加成功！");
+							location.href="/page/recordAdd"
+						} else {
+							alert(res.msg);
+						}
+					},
+					error: function() {
+						alert("error");
+					}
+				});
+			});
+			
+			$("#in-type").click(function() {
+				$("#in-type").css("background", "#CCC");
+				$("#out-type").css("background", "#EEE")
+				$("#type").val(1);
+				listByParent(0, $("#type").val());
+			});
+			
+			$("#out-type").click(function() {
+				$("#in-type").css("background", "#EEE");
+				$("#out-type").css("background", "#CCC")
+				$("#type").val(0);
+				listByParent(0, $("#type").val());
+			});
+		});
+		
+		function listByParent(e, level) {
+    		var pid = $(e).val();
+    		if(pid) {
+    			$(e).attr("id", "consumeId");
+    			$(e).attr("name", "consumeId");
+    			if(level!=0) {
+    				var pselect = $("#level"+(level-1)+"-div").find("select");
+    				pselect.removeAttr("id");
+    				pselect.removeAttr("name");
+    			}
+    			$.ajax({
+    				url: "/consume/listByParent/"+$("#type").val()+"/"+pid,
+    				method: "get",
+    				dataType: "json",
+    				success: function(res) {
+    					if(100==res.code) {
+    						if(0!=res.data.length) {
+    							var txt = "<select onchange=\"listByParent(this, "+(level+1)+");\">";
+    							txt += "<option value=''>请选择</option>"
+    							for(var i=0;i<res.data.length;i++) {
+    								txt += "<option value='"+res.data[i].id+"'>"+res.data[i].name+"</option>";
+    							}
+    							txt += "</option>";
+    							$("#level"+(level+1)+"-div").html(txt);
+    						} else {
+    							if(level<2) {
+    								for(;level<3;level++) {
+	    								$("#level"+(level+1)+"-div").html("");
+    								}
+    							}
+    						}
+							var selects = $("select");
+							selects.selectmenu().selectmenu('refresh', true);
+    					}
+    				},
+    				error: function() {
+    					alert("error");
+    				}
+    			});
+    		} else {
+    			//if(level<2) {
+				//	$("#level"+(level+1)+"-div").html("");
+				//}
+    			if(level<2) {
+					for(;level<3;level++) {
+						$("#level"+(level+1)+"-div").html("");
+					}
+				}
+    			$(e).removeAttr("id");
+    			$(e).removeAttr("name");
+    			if(level!=0) {
+    				var pselect = $("#level"+(level-1)+"-div").find("select");
+    				pselect.attr("id", "consumeId");
+    				pselect.attr("name", "consumeId");
+    			}
+    		}
+    	}
+		
+		function getAccountList(e) {
+			var wayId = $(e).val();
+			if(wayId) {
+				$.ajax({
+					url : "/account/way/"+wayId,
+					type: "get",
+					dataType: "json",
+					success: function(res) {
+						if(100==res.code) {
+							var txt = "<option value=''>请选择</option>"
+   							for(var i=0;i<res.data.length;i++) {
+   								txt += "<option value='"+res.data[i].id+"'>"+res.data[i].name+"</option>";
+   							}
+   							txt += "</option>";
+   							$("#accountId").html(txt);
+						}
+					},
+					error: function() {
+						alert("error");
+					}
+				});
+			}
+		}
+	</script>
+</body>
+</html>

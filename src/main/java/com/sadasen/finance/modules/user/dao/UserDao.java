@@ -16,6 +16,7 @@ public interface UserDao extends BaseMapper<User> {
 	
 	/**
 	 * 登录查询（用户名和密码）
+	 * 用户登录
 	 * @param userDto
 	 * @return
 	 */
@@ -23,6 +24,7 @@ public interface UserDao extends BaseMapper<User> {
 	
 	/**
 	 * 根据用户名查询用户信息
+	 * 
 	 * @param userName
 	 * @return
 	 */

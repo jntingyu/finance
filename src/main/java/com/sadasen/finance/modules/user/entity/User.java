@@ -24,6 +24,9 @@ public class User extends BaseBean {
 	private String email;
 	private String profilePic;
 	private String regTime;
+	private long indexBillId;
+	// 用户
+	private long currentBillId;
 
 	public User() {
 	}
@@ -82,6 +85,22 @@ public class User extends BaseBean {
 
 	public void setRegTime(String regTime) {
 		this.regTime = regTime;
+	}
+
+	public long getIndexBillId() {
+		return indexBillId;
+	}
+
+	public void setIndexBillId(long indexBillId) {
+		this.indexBillId = indexBillId;
+	}
+
+	public long getCurrentBillId() {
+		return currentBillId;
+	}
+
+	public void setCurrentBillId(long currentBillId) {
+		this.currentBillId = currentBillId;
 	}
 
 }

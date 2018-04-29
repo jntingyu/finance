@@ -18,10 +18,20 @@
 
 <body>
 	<div data-role="page">
+		<!-- 
 		<div data-role="header" data-position="fixed">
 			<a href="/page/recordAdd">记账</a>
 			<h1>首页</h1>
 			<a href="/user/logout">注销</a>
+		</div>
+		 -->
+		<div data-role="header">
+		  <div data-role="navbar">
+		    <ul>
+		      <li><a href="#anylink">首页</a></li>
+		      <li><a href="#anylink">搜索</a></li>
+		    </ul>
+		  </div>
 		</div>
 		<div data-role="content">
 			<h4>总数：<span id="total-all-amount"></span>元&nbsp;&nbsp;&nbsp;：<span id="avg-all-amount"></span>元</h4>
@@ -75,7 +85,7 @@
 			<div data-role="navbar">
 				<ul>
 					<li><a href="/page/index" class="ui-btn-active ui-state-persist">首页</a></li>
-					<li><a href="/page/consumeList">分类</a></li>
+					<li><a th:href="@{/product/list/{billId}(billId=${billId})}">分类</a></li>
 					<li><a href="/page/wayList">途径</a></li>
 					<li><a href="/page/accountList">账户</a></li>
 					<li><a href="/page/statistics">统计</a></li>

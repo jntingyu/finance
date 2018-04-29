@@ -55,6 +55,28 @@ public class Utils implements Serializable {
 		return getLoginUser(request).getId();
 	}
 	
+	/**
+	 * 获得当前登录用户的当前记账单ID
+	 * @param request
+	 * @return
+	 */
+	public static long getCurrentBillId(HttpServletRequest request) {
+		User loginUser = getLoginUser(request);
+		if(0L==loginUser.getCurrentBillId()) {
+			loginUser.setCurrentBillId(loginUser.getIndexBillId());
+		}
+		return loginUser.getCurrentBillId();
+	}
+	
+	/**
+	 * 获得当前登录用户的首页记账单ID
+	 * @param request
+	 * @return
+	 */
+	public static long getIndexBillId(HttpServletRequest request) {
+		return getLoginUser(request).getIndexBillId();
+	}
+	
 	public static String dbDecrypt(String s) {
 		StringBuilder sb = new StringBuilder();
 		for(char c : s.toCharArray()) {

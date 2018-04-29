@@ -63,7 +63,11 @@
 					dataType: "JSON",
 					success: function(res) {
 						if(100==res.code) {
-							location.href="/page/index";
+							if(0==res.data.indexBillId) {
+								location.href="/view/bill/list";
+							} else {
+								location.href="/view/index";
+							}
 						} else {
 							alert(res.msg);
 						}
