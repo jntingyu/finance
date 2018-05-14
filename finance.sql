@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS t_bill (
 	type tinyint(4) DEFAULT 0 COMMENT '记账类型 0：个人，1：集体，2：旅行，3：出差',
 	start_date date NOT NULL COMMENT '记账开始日期',
 	end_date date DEFAULT NULL COMMENT '记账结束日期',
+	status tinyint DEFAULT 0 COMMENT '状态，0：使用中，1：结束记账',
 	remark varchar(255) DEFAULT NULL COMMENT '备注',
 	create_time timestamp DEFAULT current_timestamp COMMENT '创建时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

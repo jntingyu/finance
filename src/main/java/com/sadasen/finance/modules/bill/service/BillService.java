@@ -1,5 +1,7 @@
 package com.sadasen.finance.modules.bill.service;
 
+import com.sadasen.finance.modules.bill.entity.Bill;
+
 /**
  * @date 2018年4月22日
  * @author lei.ys
@@ -7,5 +9,7 @@ package com.sadasen.finance.modules.bill.service;
  * @desc
  */
 public interface BillService {
+	
+	public Bill save(Bill bill);
 
 }
