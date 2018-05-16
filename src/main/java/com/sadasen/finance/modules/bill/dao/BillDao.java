@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.beetl.sql.core.mapper.BaseMapper;
 
+import com.sadasen.finance.modules.bill.dto.BillDto;
 import com.sadasen.finance.modules.bill.entity.Bill;
 
 /**
@@ -14,6 +15,6 @@ import com.sadasen.finance.modules.bill.entity.Bill;
  */
 public interface BillDao extends BaseMapper<Bill> {
 	
-	public List<Bill> selectListByCondition(long userId);
+	public List<Bill> selectListByCondition(BillDto billDto);
 
 }

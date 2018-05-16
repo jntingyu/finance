@@ -1,5 +1,8 @@
 package com.sadasen.finance.modules.bill.service;
 
+import java.util.List;
+
+import com.sadasen.finance.modules.bill.dto.BillDto;
 import com.sadasen.finance.modules.bill.entity.Bill;
 
 /**
@@ -11,5 +14,7 @@ import com.sadasen.finance.modules.bill.entity.Bill;
 public interface BillService {
 	
 	public Bill save(Bill bill);
+	
+	public List<Bill> findListByCondition(BillDto billDto);
 
 }
